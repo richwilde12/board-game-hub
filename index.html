@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Game Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Home screen: makes "Add to Home Screen" use your icon and open the app full screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Game Hub">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="theme-color" content="#0F172A">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <style>
+    html, body { margin: 0; height: 100%; background: #0F172A; color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow: hidden; }
+    iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #0F172A; }
+    #msg { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; }
+    #msg img { width: 96px; height: 96px; border-radius: 22px; }
+    #msg a { color: #8B5CF6; font-weight: 700; }
+    #msg code { background: #1E293B; padding: 2px 6px; border-radius: 6px; }
+    #hint { display: none; }
+  </style>
+</head>
+<body>
+  <div id="msg">
+    <img src="apple-touch-icon.png" alt="">
+    <div id="msgText">Loading…</div>
+    <div id="hint">Taking a while? <a id="direct" href="#">Open the app directly</a></div>
+  </div>
+
+  <script>
+    // ── The ONE setting you need to change ──────────────────────────────────────────────
+    // Paste your Apps Script web app address (the one ending in /exec) between the quotes.
+    var APP_URL = 'PASTE_YOUR_WEB_APP_URL_HERE';
+    // ────────────────────────────────────────────────────────────────────────────────────
+
+    // Builds the address to load. Any ?view=...&match=... on this page is passed through to the app.
+    function buildAppUrl(appUrl, search) {
+      return appUrl + (search || '');
+    }
+
+    function isConfigured(appUrl) {
+      return typeof appUrl === 'string' && /^https:\/\/script\.google\.com\/.+\/exec$/.test(appUrl);
+    }
+
+    (function start() {
+      var text = document.getElementById('msgText');
+      if (!isConfigured(APP_URL)) {
+        text.innerHTML = 'Almost there — open <code>index.html</code> in your GitHub repository and replace ' +
+          '<code>PASTE_YOUR_WEB_APP_URL_HERE</code> with your Apps Script web app address (it ends in <code>/exec</code>).';
+        return;
+      }
+      var url = buildAppUrl(APP_URL, location.search);
+      var frame = document.createElement('iframe');
+      frame.title = 'Universal Board Game Hub';
+      frame.setAttribute('allow', 'clipboard-write; fullscreen');
+      frame.onload = function () { document.getElementById('msg').style.display = 'none'; };
+      frame.src = url;
+      document.body.appendChild(frame);
+      document.getElementById('direct').href = url;
+      setTimeout(function () { var h = document.getElementById('hint'); if (h) h.style.display = 'block'; }, 8000);
+    })();
+  </script>
+</body>
+</html>
